@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS "-Wall")
 #   set (input02 "train_target.csv")
 # etc....
 
-set (input01 "")
+set (input01 "testFile1.txt")
 set (input02 "")
 set (input03 "")
 set (input04 "")
@@ -22,4 +22,4 @@ foreach(file IN LISTS input01 input02 input03 input04)
 endforeach()
 
 set(CMAKE_CXX_STANDARD 14)
-add_executable(${EXE_NAME} main.cpp graph.h vertex.h)
+add_executable(${EXE_NAME} main.cpp graph.h vertex.h handler.h handler.cpp)

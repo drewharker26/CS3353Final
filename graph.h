@@ -24,8 +24,8 @@ public:
     Graph() = default;
     //~Graph();
     void addVertex(U vertex);
-    void addConnection(int edgeVal, U vertex, U connection);
-    void addEdge(int edgeVal, U vertex, U connection);
+    void addConnection(U vertex, U connection);
+    void bft(U general);
 private:
     vector<vector<U>> graph;
 };
@@ -67,8 +67,7 @@ void Graph<U, T>::addVertex(U vertex) {
 }
 
 template<class U, class T>
-void Graph<U, T>::addConnection(int edgeVal, U vertex, U connection) {
-    connection.distance = edgeVal;
+void Graph<U, T>::addConnection(U vertex, U connection) {
     bool foundVertex = false;
     bool foundConnection = false;
     for (unsigned int i = 0; i < graph.size(); i++) { //find the appropriate vertex to add connection
