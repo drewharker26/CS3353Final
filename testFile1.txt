@@ -1,12 +1,12 @@
 [7]
-A
-B
-C
-D
-E
-F
-G
-[undirected]
+A,F
+B,G
+C,G
+D,G
+E,G
+F,G
+G,G
+[9]
 A - B
 A - C
 B - D
@@ -16,3 +16,4 @@ D - F
 D - E
 G - F
 E - F
+A,1

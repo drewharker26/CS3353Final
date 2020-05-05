@@ -23,9 +23,9 @@ class Graph {
 public:
     Graph() = default;
     //~Graph();
-    void addVertex(U vertex);
+    void addVertex(string faulty, U vertex);
     void addConnection(U vertex, U connection);
-    void bft(U general);
+    void bftNaive(U general, int order);
 private:
     vector<vector<U>> graph;
 };
@@ -45,7 +45,11 @@ bool operator==(const Vertex<T> &v1, const Vertex<T> &v2) { //overload == operat
 }
 
 template<class U, class T>
-void Graph<U, T>::addVertex(U vertex) {
+void Graph<U, T>::addVertex(string faulty, U vertex) {
+    if(faulty == "G")
+        vertex.isFaulty = false;
+    else
+        vertex.isFaulty = true;
     if (graph.size() == 0) { //if graph is empty we know vertex doesnt exist so we create vector and push it back
         vector<U> tempVec;
         tempVec.push_back(vertex);
@@ -91,6 +95,12 @@ void Graph<U, T>::addConnection(U vertex, U connection) {
     }
     if (foundVertex == false)
         cout << "Vertex not found" << endl;
+}
+
+template<class U, class T>
+void Graph<U, T>::bftNaive(U general, int order) { //uses A as the general
+    bool foundGeneral = false;
+
 }
 
 #endif //INC_20S_3353_PA02_GRAPH_H

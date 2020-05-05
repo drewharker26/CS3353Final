@@ -6,6 +6,7 @@
 #define INC_20S_3353_PA02_VERTEX_H
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -18,8 +19,8 @@ public:
 
 
     T data;
-    int distance = 0;
-    bool visited = false;
+    bool isFaulty;
+    vector<int> ordersRecieved; //attack = 1, retreat = 0
 };
 
 template<class T>
