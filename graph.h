@@ -23,7 +23,7 @@ public:
     //~Graph();
     void addVertex(string faulty, U vertex);
     void addConnection(U vertex, U connection);
-    void bftNaive(ofstream &file, U general, int order);
+    void bftComplex(ofstream &file, U general, int order);
 private:
     vector<vector<U>> graph;
     queue<U> Q;
@@ -97,13 +97,12 @@ void Graph<U, T>::addConnection(U vertex, U connection) {
 }
 
 template<class U, class T>
-void Graph<U, T>::bftNaive(ofstream &file, U general, int order) { //uses A as the general
+void Graph<U, T>::bftComplex(ofstream &file, U general, int order) { //uses A as the general
     bool foundGeneral = false;
     bool connectionFound = false;
     Vertex<T> vertexV = general;
     for (unsigned int i = 0; i < graph.size(); i++) { //find the vertex matching the general in the graph
-        while(graph[i][0].getData() == vertexV.data) {
-            // && foundGeneral == false && connectionFound == false
+        if(graph[i][0].getData() == vertexV.data) {
             graph[i][0].visited = true;
             Q.push(vertexV); //enqueue
             while (Q.size() != 0) //while queue is not empty
@@ -112,25 +111,52 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order) { //uses A as t
                 Q.pop(); //remove "A" from queue
                 foundGeneral = false;
                 connectionFound = false;
-                for (unsigned int k = 0; k < graph.size(); k++) { //find general we are currently at
-                    if (graph[k][0].getData() == vertexV.data && foundGeneral == false && connectionFound == false) {
+                for (unsigned int k = 0; k < graph.size(); k++) //find general we are currently at
+                {
+                    if (graph[k][0].getData() == vertexV.data && foundGeneral == false && connectionFound == false)
+                    {
                         foundGeneral = true;
-                        for (unsigned int j = 1;
-                             j < graph[i].size(); j++) //loop through direct connections of the general
+                        for (unsigned int j = 1; j < graph[k].size(); j++) //loop through direct connections of the general
                         {
                             connectionFound = false;
                             for (unsigned int x = 0; x < graph.size(); x++) //find the generals connections in the graph
                             {
-                                if (graph[i][j].getData() == graph[x][0].data && connectionFound == false) {
-                                    connectionFound = true;
-                                    graph[x][0].ordersRecieved.push_back(order); //communicate the order
-                                } else if (connectionFound == true)
+                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false)
+                                {
+                                    if(graph[x][0].visited == true)
+                                    {
+                                        if(graph[x][0].getData() == general.data)
+                                            break;
+                                        else
+                                        {
+                                            if (graph[k][0].isFaulty == true && order == 1)
+                                                graph[x][0].ordersRecieved.push_back(0);
+                                            else if (graph[k][0].isFaulty == true && order == 0)
+                                                graph[x][0].ordersRecieved.push_back(1);
+                                            else
+                                                graph[x][0].ordersRecieved.push_back(order); //communicate the order
+                                        }
+                                    }
+                                    else {
+                                        connectionFound = true;
+                                        if (graph[k][0].isFaulty == true && order == 1)
+                                            graph[x][0].ordersRecieved.push_back(0);
+                                        else if (graph[k][0].isFaulty == true && order == 0)
+                                            graph[x][0].ordersRecieved.push_back(1);
+                                        else
+                                            graph[x][0].ordersRecieved.push_back(order); //communicate the order
+                                        Q.push(graph[k][j]); //enqueue u
+                                        graph[x][0].visited = true;
+                                    }
+                                }
+                                else if (connectionFound == true)
                                     break;
                             }
                         }
                     }
+                    else if(foundGeneral == true || connectionFound == true)
+                        break;
                 }
-
             }
         }
     }

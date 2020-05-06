@@ -47,7 +47,7 @@ void Handler::addData(ofstream &file, char *argv[], Graph<Vertex<string>, string
         getline(fileName, general,',');
         getline(fileName, sOrder);
         order = stoi(sOrder);
-        publicGraph.bftNaive(file, general, order);
+        publicGraph.bftComplex(file, general, order);
         fileName.close();
     }
     else

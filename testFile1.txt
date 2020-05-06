@@ -1,6 +1,6 @@
 [7]
-A,F
-B,G
+A,G
+B,F
 C,G
 D,G
 E,G
