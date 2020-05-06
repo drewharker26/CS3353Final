@@ -19,7 +19,7 @@ class Handler {
 public:
     Handler() = default;
     void removePucnt(string &str);
-    void addData(char *argv[], Graph<Vertex<string>, string>& publicGraph);
+    void addData(ofstream &file, char *argv[], Graph<Vertex<string>, string>& publicGraph);
 };
 
 #endif //INC_20S_3353_PA02_HANDLER_H
