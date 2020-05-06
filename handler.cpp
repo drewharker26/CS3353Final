@@ -14,8 +14,8 @@ void Handler::removePucnt(string &str)
 }
 
 void Handler::addData(ofstream &file, char *argv[], Graph<Vertex<string>, string>& publicGraph) {
-    string line, vertex, connection, tempNumVertexs, tempNumConnections, faulty, general, sOrder;
-    int numVertexs, numConnections, order;
+    string line, vertex, connection, tempNumVertexs, tempNumConnections, faulty, general, sOrder, tempNumTraitors;
+    int numVertexs, numConnections, order, numTraitors;
     ifstream fileName;
     fileName.open(argv[2]);
     if(fileName.is_open())
@@ -47,7 +47,10 @@ void Handler::addData(ofstream &file, char *argv[], Graph<Vertex<string>, string
         getline(fileName, general,',');
         getline(fileName, sOrder);
         order = stoi(sOrder);
+        getline(fileName, tempNumTraitors);
+        numTraitors = stoi(tempNumTraitors);
         publicGraph.bftNaive(file, general, order);
+        publicGraph.lsp(file, general, numTraitors, order);
         //publicGraph.bftComplex(file, general, order);
         fileName.close();
     }

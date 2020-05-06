@@ -22,6 +22,7 @@ public:
     T data;
     bool visited = false;
     bool isFaulty = false;
+    int generalOrder;
     vector<int> ordersRecieved; //attack = 1, retreat = 0
 };
 

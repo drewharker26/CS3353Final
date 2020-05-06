@@ -26,7 +26,7 @@ public:
     void addConnection(U vertex, U connection);
     void bftNaive(ofstream &file, U general, int order);
     void bftComplex(ofstream &file, U general, int order);
-    void lamports(ofstream &file, U general, int order);
+    void lsp(ofstream &file, U general, int numTraitors, int order);
 private:
     int processResults(U general);
     vector<vector<U>> graph;
@@ -45,6 +45,44 @@ bool operator==(const Vertex<T> &v1, const Vertex<T> &v2) { //overload == operat
     if (v1.getData() == v2.getData())
         return true;
     return false;
+}
+
+template<class U, class T>
+void Graph<U, T>::lsp(ofstream &file, U general, int numTraitors, int order) {
+    bool foundGeneral = false;
+    bool connectionFound = false;
+    if(numTraitors == 0)
+    {
+        for (unsigned int i = 0; i < graph.size(); i++) { //find the vertex matching the general in the graph
+            if (graph[i][0].getData() == general.data) {
+                foundGeneral = false;
+                connectionFound = false;
+                for (unsigned int k = 0; k < graph.size(); k++) //find general we are currently at
+                {
+                    if (graph[k][0].getData() == general.data && foundGeneral == false && connectionFound == false) {
+                        foundGeneral = true;
+                        for (unsigned int j = 1; j < graph[k].size(); j++) //loop through direct connections of the general
+                        {
+                            connectionFound = false;
+                            for (unsigned int x = 0; x < graph.size(); x++) //find the generals connections in the graph
+                            {
+                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false) {
+                                    connectionFound = true;
+                                    graph[x][0].ordersRecieved.push_back(0);
+                                } else if (connectionFound == true)
+                                    break;
+                            }
+                        }
+                    } else if (foundGeneral == true || connectionFound == true)
+                        break;
+                }
+            }
+        }
+        if(order == 1)
+            cout << "We have been ordered to attack!" << endl;
+        else
+            cout << "We have been ordered to retreat!" << endl;
+    }
 }
 
 template<class U, class T>
@@ -188,7 +226,7 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
     else
         file << "The number of attack orders exactly equals retreat orders!" << endl;
 }
-
+/*
 template<class U, class T>
 void Graph<U, T>::bftComplex(ofstream &file, U general, int order) { //uses A as the general
     bool foundGeneral = false;
@@ -254,5 +292,5 @@ void Graph<U, T>::bftComplex(ofstream &file, U general, int order) { //uses A as
         }
     }
 }
-
+*/
 #endif //INC_20S_3353_PA02_GRAPH_H
