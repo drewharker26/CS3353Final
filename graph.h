@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 #include <queue>
 
 #include "vertex.h"
@@ -25,6 +26,7 @@ public:
     void addConnection(U vertex, U connection);
     void bftNaive(ofstream &file, U general, int order);
     void bftComplex(ofstream &file, U general, int order);
+    void lamports(ofstream &file, U general, int order);
 private:
     int processResults(U general);
     vector<vector<U>> graph;
@@ -137,22 +139,19 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
                 connectionFound = false;
                 for (unsigned int k = 0; k < graph.size(); k++) //find general we are currently at
                 {
-                    if (graph[k][0].getData() == vertexV.data && foundGeneral == false && connectionFound == false)
-                    {
+                    if (graph[k][0].getData() == vertexV.data && foundGeneral == false && connectionFound == false) {
                         foundGeneral = true;
-                        for (unsigned int j = 1; j < graph[k].size(); j++) //loop through direct connections of the general
+                        for (unsigned int j = 1;
+                             j < graph[k].size(); j++) //loop through direct connections of the general
                         {
                             connectionFound = false;
                             for (unsigned int x = 0; x < graph.size(); x++) //find the generals connections in the graph
                             {
-                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false)
-                                {
-                                    if(graph[x][0].visited == true)
-                                    {
-                                        if(graph[x][0].getData() == general.data)
+                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false) {
+                                    if (graph[x][0].visited == true) {
+                                        if (graph[x][0].getData() == general.data)
                                             break;
-                                        else
-                                        {
+                                        else {
                                             if (graph[k][0].isFaulty == true && order == 1)
                                                 graph[x][0].ordersRecieved.push_back(0);
                                             else if (graph[k][0].isFaulty == true && order == 0)
@@ -160,8 +159,7 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
                                             else
                                                 graph[x][0].ordersRecieved.push_back(order); //communicate the order
                                         }
-                                    }
-                                    else {
+                                    } else {
                                         connectionFound = true;
                                         if (graph[k][0].isFaulty == true && order == 1)
                                             graph[x][0].ordersRecieved.push_back(0);
@@ -172,25 +170,23 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
                                         Q.push(graph[k][j]); //enqueue u
                                         graph[x][0].visited = true;
                                     }
-                                }
-                                else if (connectionFound == true)
+                                } else if (connectionFound == true)
                                     break;
                             }
                         }
-                    }
-                    else if(foundGeneral == true || connectionFound == true)
+                    } else if (foundGeneral == true || connectionFound == true)
                         break;
                 }
             }
-            int finalOrder = processResults(general);
-            if(finalOrder == 1)
-                cout << "We have been ordered to attack!" << endl;
-            else if(finalOrder == 0)
-                cout << "We have been ordered to retreat!" << endl;
-            else
-                cout << "The number of attack orders exactly equals retreat orders!" << endl;
         }
     }
+    int finalOrder = processResults(general);
+    if(finalOrder == 1)
+        file << "We have been ordered to attack!" << endl;
+    else if(finalOrder == 0)
+        file << "We have been ordered to retreat!" << endl;
+    else
+        file << "The number of attack orders exactly equals retreat orders!" << endl;
 }
 
 template<class U, class T>
