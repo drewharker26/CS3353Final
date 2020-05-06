@@ -1,0 +1,22 @@
+[7]
+A,G
+B,F
+C,G
+D,G
+E,G
+F,G
+G,G
+[12]
+A - B
+A - C
+A - D
+A - E
+A - F
+A - G
+B - C
+C - D
+D - E
+E - F
+F - G
+G - B
+A,1
