@@ -49,7 +49,10 @@ void Handler::addData(ofstream &file, char *argv[], Graph<Vertex<string>, string
         getline(fileName, tempNumTraitors);
         numTraitors = stoi(tempNumTraitors);
         publicGraph.bftNaive(file, general, order);
-        publicGraph.lsp(file, general, numTraitors, order);
+        if(numTraitors == 0)
+            publicGraph.lsp(file, general, order);
+        else
+            publicGraph.lsp2(file, general, numTraitors, order);
         publicGraph.printLSP(file, general);
         fileName.close();
     }
