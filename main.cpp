@@ -12,7 +12,8 @@ int main(int argc, char *argv[]) {
     Handler handler;
     ofstream fout;
     fout.open("bftOutput.txt");
-    cout << "Command File supplied " << argv[1] << endl;
+    cout << "Output file hardcoded: bftOutput.txt " << endl;
+    cout << "Command File supplied: " << argv[1] << endl;
     handler.addData(fout, argv, publicGraph);
     return 0;
 }

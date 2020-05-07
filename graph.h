@@ -50,7 +50,7 @@ bool operator==(const Vertex<T> &v1, const Vertex<T> &v2) { //overload == operat
 
 template<class U, class T>
 void Graph<U, T>::printLSP(ofstream &file, U general) {
-    int finalOrder = processResults(general);
+    int finalOrder = processResults(general); //recieves ultimate decision
     if(finalOrder == 1)
         file << "We have been ordered to attack!" << endl;
     else if(finalOrder == 0)
@@ -64,14 +64,14 @@ template<class U, class T>
 int Graph<U, T>::processResults(U general)
 {
     vector<int> results;
-    for(int y=0; y < graph.size(); y++) //loop through graph vertices excluding general and determine results
+    for(int y=0; y < graph.size(); y++) //loop through graph vertices excluding general and determine majority for each
     {
-        if(graph[y][0].getData() != general.data) {
+        if(graph[y][0].getData() != general.data) { //we exclude the general as he should not be recieving any orders
             int result = graph[y][0].getMajority();
-            results.push_back(result);
+            results.push_back(result); //add each individual result to overall result vector
         }
     }
-    int attackFreq = count(results.begin(), results.end(), 1);
+    int attackFreq = count(results.begin(), results.end(), 1); //compute number of attacks and retreats
     int retreatFreq = count(results.begin(), results.end(), 0);
     if(attackFreq > retreatFreq)
         return 1;
@@ -161,18 +161,18 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
                             for (unsigned int x = 0; x < graph.size(); x++) //find the generals connections in the graph
                             {
                                 if (graph[k][j].getData() == graph[x][0].data && connectionFound == false) {
-                                    if (graph[x][0].visited == true) {
-                                        if (graph[x][0].getData() == general.data)
+                                    if (graph[x][0].visited == true) { //check if repeat visit
+                                        if (graph[x][0].getData() == general.data) //we dont want to send orders back to the general
                                             break;
                                         else {
-                                            if (graph[k][0].isFaulty == true && order == 1)
+                                            if (graph[k][0].isFaulty == true && order == 1) //if node is faulty, reverse order
                                                 graph[x][0].ordersRecieved.push_back(0);
                                             else if (graph[k][0].isFaulty == true && order == 0)
                                                 graph[x][0].ordersRecieved.push_back(1);
                                             else
                                                 graph[x][0].ordersRecieved.push_back(order); //communicate the order
                                         }
-                                    } else {
+                                    } else { //if node has nto been previously visited
                                         connectionFound = true;
                                         if (graph[k][0].isFaulty == true && order == 1)
                                             graph[x][0].ordersRecieved.push_back(0);
@@ -204,7 +204,7 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
 
 
 template<class U, class T>
-void Graph<U, T>::lsp(ofstream &file, U general, int order) {
+void Graph<U, T>::lsp(ofstream &file, U general, int order) { //this executes if there are no known traitors
     for (unsigned int i = 0; i < graph.size(); i++) { //reset all relevant values due to previous algo
         graph[i][0].ordersRecieved.clear();
         graph[i][0].generalOrder = 0;
@@ -239,7 +239,7 @@ void Graph<U, T>::lsp(ofstream &file, U general, int order) {
 }
 
 template<class U, class T>
-void Graph<U, T>::lsp2(ofstream &file, U general, int numTraitors, int order) {
+void Graph<U, T>::lsp2(ofstream &file, U general, int numTraitors, int order) { //this executes recursivly while traitors exist
     for (unsigned int i = 0; i < graph.size(); i++) { //reset all relevant values due to previous algo
         graph[i][0].ordersRecieved.clear();
         graph[i][0].generalOrder = 0;
@@ -277,7 +277,7 @@ void Graph<U, T>::lsp2(ofstream &file, U general, int numTraitors, int order) {
             }
         }
     }
-    for (unsigned int i = 0; i < graph.size(); i++) { //loop through liutentants
+    for (unsigned int i = 0; i < graph.size(); i++) { //loop through lieutenants, calling function recursively as long as there are traitors
         if (graph[i][0].getData() != general.data && numTraitors > 0) {
             lsp2(file, graph[i][0], numTraitors - 1, graph[i][0].generalOrder);
         }
