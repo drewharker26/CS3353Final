@@ -1,9 +1,9 @@
 [7]
 A,G
-B,F
+B,G
 C,G
 D,G
-E,G
+E,F
 F,G
 G,G
 [12]

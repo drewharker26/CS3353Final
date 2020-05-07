@@ -25,8 +25,8 @@ public:
     void addVertex(string faulty, U vertex);
     void addConnection(U vertex, U connection);
     void bftNaive(ofstream &file, U general, int order);
-    void bftComplex(ofstream &file, U general, int order);
     void lsp(ofstream &file, U general, int numTraitors, int order);
+    void printLSP(ofstream &file, U general);
 private:
     int processResults(U general);
     vector<vector<U>> graph;
@@ -48,41 +48,15 @@ bool operator==(const Vertex<T> &v1, const Vertex<T> &v2) { //overload == operat
 }
 
 template<class U, class T>
-void Graph<U, T>::lsp(ofstream &file, U general, int numTraitors, int order) {
-    bool foundGeneral = false;
-    bool connectionFound = false;
-    if(numTraitors == 0)
-    {
-        for (unsigned int i = 0; i < graph.size(); i++) { //find the vertex matching the general in the graph
-            if (graph[i][0].getData() == general.data) {
-                foundGeneral = false;
-                connectionFound = false;
-                for (unsigned int k = 0; k < graph.size(); k++) //find general we are currently at
-                {
-                    if (graph[k][0].getData() == general.data && foundGeneral == false && connectionFound == false) {
-                        foundGeneral = true;
-                        for (unsigned int j = 1; j < graph[k].size(); j++) //loop through direct connections of the general
-                        {
-                            connectionFound = false;
-                            for (unsigned int x = 0; x < graph.size(); x++) //find the generals connections in the graph
-                            {
-                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false) {
-                                    connectionFound = true;
-                                    graph[x][0].ordersRecieved.push_back(0);
-                                } else if (connectionFound == true)
-                                    break;
-                            }
-                        }
-                    } else if (foundGeneral == true || connectionFound == true)
-                        break;
-                }
-            }
-        }
-        if(order == 1)
-            cout << "We have been ordered to attack!" << endl;
-        else
-            cout << "We have been ordered to retreat!" << endl;
-    }
+void Graph<U, T>::printLSP(ofstream &file, U general) {
+    int finalOrder = processResults(general);
+    if(finalOrder == 1)
+        file << "We have been ordered to attack!" << endl;
+    else if(finalOrder == 0)
+        file << "We have been ordered to retreat!" << endl;
+    else
+        file << "The number of attack orders exactly equals retreat orders!" << endl;
+
 }
 
 template<class U, class T>
@@ -226,71 +200,82 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
     else
         file << "The number of attack orders exactly equals retreat orders!" << endl;
 }
-/*
+
+
 template<class U, class T>
-void Graph<U, T>::bftComplex(ofstream &file, U general, int order) { //uses A as the general
+void Graph<U, T>::lsp(ofstream &file, U general, int numTraitors, int order) {
+    for (unsigned int i = 0; i < graph.size(); i++) { //reset all relevant values due to previous algo
+        graph[i][0].ordersRecieved.clear();
+        graph[i][0].generalOrder = 0;
+    }
     bool foundGeneral = false;
     bool connectionFound = false;
-    Vertex<T> vertexV = general;
-    for (unsigned int i = 0; i < graph.size(); i++) { //find the vertex matching the general in the graph
-        if(graph[i][0].getData() == vertexV.data) {
-            graph[i][0].visited = true;
-            Q.push(vertexV); //enqueue
-            while (Q.size() != 0) //while queue is not empty
-            {
-                vertexV = Q.front(); //v=dequeue
-                Q.pop(); //remove "A" from queue
+    if(numTraitors == 0)
+    {
+        for (unsigned int i = 0; i < graph.size(); i++) { //find the vertex matching the general in the graph
+            if (graph[i][0].getData() == general.data) {
                 foundGeneral = false;
                 connectionFound = false;
                 for (unsigned int k = 0; k < graph.size(); k++) //find general we are currently at
                 {
-                    if (graph[k][0].getData() == vertexV.data && foundGeneral == false && connectionFound == false)
-                    {
+                    if (graph[k][0].getData() == general.data && foundGeneral == false && connectionFound == false) {
                         foundGeneral = true;
                         for (unsigned int j = 1; j < graph[k].size(); j++) //loop through direct connections of the general
                         {
                             connectionFound = false;
                             for (unsigned int x = 0; x < graph.size(); x++) //find the generals connections in the graph
                             {
-                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false)
-                                {
-                                    if(graph[x][0].visited == true)
-                                    {
-                                        if(graph[x][0].getData() == general.data)
-                                            break;
-                                        else
-                                        {
-                                            if (graph[k][0].isFaulty == true && order == 1)
-                                                graph[x][0].ordersRecieved.push_back(0);
-                                            else if (graph[k][0].isFaulty == true && order == 0)
-                                                graph[x][0].ordersRecieved.push_back(1);
-                                            else
-                                                graph[x][0].ordersRecieved.push_back(order); //communicate the order
-                                        }
-                                    }
-                                    else {
-                                        connectionFound = true;
-                                        if (graph[k][0].isFaulty == true && order == 1)
-                                            graph[x][0].ordersRecieved.push_back(0);
-                                        else if (graph[k][0].isFaulty == true && order == 0)
-                                            graph[x][0].ordersRecieved.push_back(1);
-                                        else
-                                            graph[x][0].ordersRecieved.push_back(order); //communicate the order
-                                        Q.push(graph[k][j]); //enqueue u
-                                        graph[x][0].visited = true;
-                                    }
-                                }
-                                else if (connectionFound == true)
+                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false) {
+                                    connectionFound = true;
+                                    graph[x][0].ordersRecieved.push_back(0);
+                                } else if (connectionFound == true)
                                     break;
                             }
                         }
-                    }
-                    else if(foundGeneral == true || connectionFound == true)
+                    } else if (foundGeneral == true || connectionFound == true)
                         break;
                 }
             }
         }
     }
+    else { //executes if the number of traitors is greater than 1
+        for (unsigned int i = 0; i < graph.size(); i++) { //find the vertex matching the general in the graph
+            if (graph[i][0].getData() == general.data) {
+                foundGeneral = false;
+                connectionFound = false;
+                for (unsigned int k = 0; k < graph.size(); k++) //find general we are currently at
+                {
+                    if (graph[k][0].getData() == general.data && foundGeneral == false && connectionFound == false) {
+                        foundGeneral = true;
+                        for (unsigned int j = 1; j < graph[k].size(); j++) //loop through direct connections of the general
+                        {
+                            connectionFound = false;
+                            for (unsigned int x = 0; x < graph.size(); x++) //find the generals connections in the graph
+                            {
+                                if (graph[k][j].getData() == graph[x][0].data && connectionFound == false) {
+                                    connectionFound = true;
+                                    graph[x][0].generalOrder = order;
+                                    if (graph[k][0].isFaulty == true && order == 1)
+                                        graph[x][0].ordersRecieved.push_back(0);
+                                    else if (graph[k][0].isFaulty == true && order == 0)
+                                        graph[x][0].ordersRecieved.push_back(1);
+                                    else
+                                        graph[x][0].ordersRecieved.push_back(graph[x][0].generalOrder); //communicate the order
+                                } else if (connectionFound == true)
+                                    break;
+                            }
+                        }
+                    } else if (foundGeneral == true || connectionFound == true)
+                        break;
+                }
+            }
+        }
+        for (unsigned int i = 0; i < graph.size(); i++) { //loop through liutentants
+            if (graph[i][0].getData() != general.data) {
+                lsp(file, graph[i][0], numTraitors - 1, graph[i][0].generalOrder);
+            }
+        }
+    }
 }
-*/
+
 #endif //INC_20S_3353_PA02_GRAPH_H

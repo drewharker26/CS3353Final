@@ -12,8 +12,8 @@ set(CMAKE_CXX_FLAGS "-Wall")
 #   set (input02 "train_target.csv")
 # etc....
 
-set (input01 "testFile1.txt")
-set (input02 "testFile2.txt")
+set (input01 "testFile2.txt")
+set (input02 "")
 set (input03 "")
 set (input04 "")
 

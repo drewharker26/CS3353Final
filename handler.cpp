@@ -17,7 +17,7 @@ void Handler::addData(ofstream &file, char *argv[], Graph<Vertex<string>, string
     string line, vertex, connection, tempNumVertexs, tempNumConnections, faulty, general, sOrder, tempNumTraitors;
     int numVertexs, numConnections, order, numTraitors;
     ifstream fileName;
-    fileName.open(argv[2]);
+    fileName.open(argv[1]);
     if(fileName.is_open())
     {
         getline(fileName, tempNumVertexs);
@@ -41,7 +41,6 @@ void Handler::addData(ofstream &file, char *argv[], Graph<Vertex<string>, string
             removePucnt(vertex);
             removePucnt(connection);
             publicGraph.addConnection(vertex, connection);
-            //publicGraph.addConnection(connection, vertex);
             numConnections--;
         }
         getline(fileName, general,',');
@@ -51,7 +50,7 @@ void Handler::addData(ofstream &file, char *argv[], Graph<Vertex<string>, string
         numTraitors = stoi(tempNumTraitors);
         publicGraph.bftNaive(file, general, order);
         publicGraph.lsp(file, general, numTraitors, order);
-        //publicGraph.bftComplex(file, general, order);
+        publicGraph.printLSP(file, general);
         fileName.close();
     }
     else
