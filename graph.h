@@ -29,7 +29,7 @@ public:
     void lsp2(ofstream &file, U general, int numTraitors, int order);
     void printLSP(ofstream &file, U general);
 private:
-    int processResults(U general);
+    int processResults(ofstream &file, U general);
     vector<vector<U>> graph;
     queue<U> Q;
 };
@@ -50,7 +50,7 @@ bool operator==(const Vertex<T> &v1, const Vertex<T> &v2) { //overload == operat
 
 template<class U, class T>
 void Graph<U, T>::printLSP(ofstream &file, U general) {
-    int finalOrder = processResults(general); //recieves ultimate decision
+    int finalOrder = processResults(file, general); //recieves ultimate decision
     if(finalOrder == 1)
         file << "We have been ordered to attack!" << endl;
     else if(finalOrder == 0)
@@ -61,7 +61,7 @@ void Graph<U, T>::printLSP(ofstream &file, U general) {
 }
 
 template<class U, class T>
-int Graph<U, T>::processResults(U general)
+int Graph<U, T>::processResults(ofstream &file, U general)
 {
     vector<int> results;
     for(int y=0; y < graph.size(); y++) //loop through graph vertices excluding general and determine majority for each
@@ -70,6 +70,10 @@ int Graph<U, T>::processResults(U general)
             int result = graph[y][0].getMajority();
             results.push_back(result); //add each individual result to overall result vector
         }
+    }
+    file << "Majority Vector in Alphabetical Order: " << endl;
+    for (const auto &p : results) {
+        file << results[p]  << endl;
     }
     int attackFreq = count(results.begin(), results.end(), 1); //compute number of attacks and retreats
     int retreatFreq = count(results.begin(), results.end(), 0);
@@ -193,7 +197,7 @@ void Graph<U, T>::bftNaive(ofstream &file, U general, int order)
             }
         }
     }
-    int finalOrder = processResults(general);
+    int finalOrder = processResults(file, general);
     if(finalOrder == 1)
         file << "We have been ordered to attack!" << endl;
     else if(finalOrder == 0)
